@@ -1,0 +1,50 @@
+version: "3.7"
+services:
+  tortoisebot-ros1-gazebo:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.tortoisebot-ros1-gazebo
+    container_name: tortoisebot-ros1-gazebo_1
+    environment:
+      - DISPLAY=${DISPLAY}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    networks:
+      - ros-network
+  tortoisebot-ros1-slam:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.tortoisebot-ros1-slam
+    container_name: tortoisebot-ros1-slam_1
+    environment:
+      - DISPLAY=${DISPLAY}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    networks:
+      - ros-network
+  tortoisebot-ros1-waypoints:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.tortoisebot-ros1-waypoints
+    container_name: tortoisebot-ros1-waypoints_1
+    networks:
+      - ros-network
+  tortoisebot-ros1-webapp:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.tortoisebot-ros1-webapp
+    image: nginx:latest
+    container_name: tortoisebot-ros1-webapp_1
+    volumes:
+      - ~/simulation_ws/src/tortoisebot_webapp:/usr/share/nginx/html:ro
+    ports:
+      - "7000:80"
+    networks:
+      - ros-network
+
+networks:
+  ros-network:

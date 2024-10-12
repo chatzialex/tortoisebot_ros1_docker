@@ -1,0 +1,24 @@
+# Base image
+FROM ros:noetic-ros-base
+
+# Link python to python3
+RUN if ! [ -e /usr/bin/python ]; then \
+        ln -sv /usr/bin/python3 /usr/bin/python; \
+    fi
+
+RUN apt-get update && apt-get install -y git \
+ ros-noetic-tf \
+ && rm -rf /var/lib/apt/lists/*
+
+# Prepare workspace
+RUN mkdir -p /catkin_ws/src \
+ && git clone --depth 1 --branch cp22-ros1 https://github.com/chatzialex/course_web_dev_ros.git /catkin_ws/src/course_web_dev_ros
+
+# Build workspace
+WORKDIR /catkin_ws
+RUN /bin/bash -c "source /opt/ros/noetic/setup.bash; cd /catkin_ws; catkin_make"
+RUN echo source /catkin_ws/devel/setup.bash >> ~/.bashrc
+
+# Start
+ENTRYPOINT ["/bin/bash"]
+CMD ["-c", "source /catkin_ws/devel/setup.bash && rosrun course_web_dev_ros tortoisebot_action_server.py"]

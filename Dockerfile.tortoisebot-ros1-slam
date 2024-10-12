@@ -1,0 +1,21 @@
+FROM ros:noetic
+
+RUN apt-get update \
+ && apt-get install -y ros-noetic-navigation ros-noetic-gmapping \
+ ros-noetic-rviz \
+ ros-noetic-joy ros-noetic-teleop-twist-joy ros-noetic-teleop-twist-keyboard \ 
+ git \
+ && rm -rf /var/lib/apt/lists/*
+
+# Prepare workspace
+RUN mkdir -p /catkin_ws/src
+RUN git clone --depth 1 --branch cp22-ros1 https://github.com/chatzialex/tortoisebot.git /tortoisebot \
+ && cp -r /tortoisebot/tortoisebot_slam /catkin_ws/src \
+ && cp -r /tortoisebot/tortoisebot_navigation /catkin_ws/src \
+ && rm -rf /tortoisebot
+
+WORKDIR /catkin_ws
+RUN /bin/bash -c "source /opt/ros/noetic/setup.bash && catkin_make"
+
+ENTRYPOINT ["/bin/bash"]
+CMD ["-c", "source /catkin_ws/devel/setup.bash && roslaunch tortoisebot_slam mapping.launch"]
