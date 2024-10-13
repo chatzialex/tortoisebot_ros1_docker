@@ -51,12 +51,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.tortoisebot-ros1-webapp
-    image: nginx:latest
+    image: chatzialex/cp22:tortoisebot-ros1-wabapp
     container_name: tortoisebot-ros1-webapp_1
     environment:
       - ROS_MASTER_URI=http://tortoisebot-ros1-gazebo:11311
-    volumes:
-      - ~/simulation_ws/src/tortoisebot_webapp:/usr/share/nginx/html:ro
     ports:
       - "7000:80"
     networks:
