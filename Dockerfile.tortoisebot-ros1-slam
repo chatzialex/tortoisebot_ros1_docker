@@ -10,6 +10,7 @@ RUN apt-get update \
 # Prepare workspace
 RUN mkdir -p /catkin_ws/src
 RUN git clone --depth 1 --branch cp22-ros1 https://github.com/chatzialex/tortoisebot.git /tortoisebot \
+ && cp -r /tortoisebot/tortoisebot_description /catkin_ws/src \
  && cp -r /tortoisebot/tortoisebot_slam /catkin_ws/src \
  && cp -r /tortoisebot/tortoisebot_navigation /catkin_ws/src \
  && rm -rf /tortoisebot
