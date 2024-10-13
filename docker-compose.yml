@@ -5,46 +5,62 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.tortoisebot-ros1-gazebo
+    image: chatzialex/cp22:tortoisebot-ros1-gazebo
     container_name: tortoisebot-ros1-gazebo_1
     environment:
       - DISPLAY=${DISPLAY}
+      - ROS_MASTER_URI=http://tortoisebot-ros1-gazebo:11311
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
     networks:
-      - ros-network
+      - ros1-network
+    hostname: tortoisebot-ros1-gazebo
   tortoisebot-ros1-slam:
     restart: always
+    depends_on:
+      - tortoisebot-ros1-gazebo
     build:
       context: .
       dockerfile: Dockerfile.tortoisebot-ros1-slam
+    image: chatzialex/cp22:tortoisebot-ros1-slam
     container_name: tortoisebot-ros1-slam_1
     environment:
       - DISPLAY=${DISPLAY}
+      - ROS_MASTER_URI=http://tortoisebot-ros1-gazebo:11311
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
     networks:
-      - ros-network
+      - ros1-network
   tortoisebot-ros1-waypoints:
     restart: always
+    depends_on:
+      - tortoisebot-ros1-gazebo
     build:
       context: .
       dockerfile: Dockerfile.tortoisebot-ros1-waypoints
+    image: chatzialex/cp22:tortoisebot-ros1-waypoints
     container_name: tortoisebot-ros1-waypoints_1
+    environment:
+      - ROS_MASTER_URI=http://tortoisebot-ros1-gazebo:11311
     networks:
-      - ros-network
+      - ros1-network
   tortoisebot-ros1-webapp:
     restart: always
+    depends_on:
+      - tortoisebot-ros1-gazebo
     build:
       context: .
       dockerfile: Dockerfile.tortoisebot-ros1-webapp
     image: nginx:latest
     container_name: tortoisebot-ros1-webapp_1
+    environment:
+      - ROS_MASTER_URI=http://tortoisebot-ros1-gazebo:11311
     volumes:
       - ~/simulation_ws/src/tortoisebot_webapp:/usr/share/nginx/html:ro
     ports:
       - "7000:80"
     networks:
-      - ros-network
+      - ros1-network
 
 networks:
-  ros-network:
+  ros1-network:
