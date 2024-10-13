@@ -1,11 +1,15 @@
 # Base image
 FROM osrf/ros:noetic-desktop-full-focal
 
+ENV SLOT_ROSBRIDGE_PORT=20001
+
 # Install Gazebo
 RUN apt-get update && apt-get install -y \
  git \
  gazebo11 \
  ros-noetic-gazebo-ros-pkgs \
+ ros-noetic-tf2-web-republisher \
+ ros-noetic-web-video-server ros-noetic-rosbridge-server \
  && rm -rf /var/lib/apt/lists/*
 
 # Prepare workspace
@@ -14,10 +18,12 @@ RUN git clone --depth 1 --branch cp22-ros1 https://github.com/chatzialex/tortois
  && cp -r /tortoisebot/tortoisebot_description /catkin_ws/src \
  && cp -r /tortoisebot/tortoisebot_gazebo /catkin_ws/src \
  && rm -rf /tortoisebot
+RUN mkdir -p /catkin_ws/src \
+ && git clone --depth 1 --branch cp22-ros1 https://github.com/chatzialex/course_web_dev_ros.git /catkin_ws/src/course_web_dev_ros
 
 # Build and source environment
 RUN /bin/bash -c "source /opt/ros/noetic/setup.bash && cd /catkin_ws && catkin_make"
 
 # Start
 ENTRYPOINT ["/bin/bash"]
-CMD ["-c", "source /catkin_ws/devel/setup.bash && roslaunch tortoisebot_gazebo tortoisebot_playground.launch"]
+CMD ["-c", "source /catkin_ws/devel/setup.bash && roslaunch tortoisebot_gazebo tortoisebot_playground_with_web.launch"]
