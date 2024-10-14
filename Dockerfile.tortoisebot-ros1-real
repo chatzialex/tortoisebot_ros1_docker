@@ -1,0 +1,25 @@
+FROM ros:noetic
+
+RUN apt-get update \
+ && apt-get install -y ros-noetic-navigation ros-noetic-gmapping \
+ ros-noetic-rviz ros-noetic-xacro ros-noetic-compressed-image-transport \
+ ros-noetic-joy ros-noetic-teleop-twist-joy ros-noetic-teleop-twist-keyboard \ 
+ ros-noetic-camera-info-manager git libraspberrypi0 libraspberrypi-dev \
+ ros-noetic-robot-state-publisher ros-noetic-joint-state-publisher \
+ python3-rpi.gpio \
+ && rm -rf /var/lib/apt/lists/*
+
+# Prepare workspace
+RUN mkdir -p /catkin_ws/src
+RUN git clone --depth 1 --branch cp22-ros1 https://github.com/chatzialex/tortoisebot.git /tortoisebot \
+ && cp -r /tortoisebot/tortoisebot_description /catkin_ws/src \
+ && cp -r /tortoisebot/tortoisebot_firmware /catkin_ws/src \
+ && cp -r /tortoisebot/raspicam_node /catkin_ws/src \
+ && cp -r /tortoisebot/ydlidar_ros /catkin_ws/src \
+ && rm -rf /tortoisebot
+
+WORKDIR /catkin_ws
+RUN /bin/bash -c "source /opt/ros/noetic/setup.bash && catkin_make"
+
+ENTRYPOINT ["/bin/bash"]
+CMD ["-c", "source /catkin_ws/devel/setup.bash && roslaunch tortoisebot_firmware bringup.launch"]

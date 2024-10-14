@@ -1,0 +1,46 @@
+version: "3.7"
+services:
+  tortoisebot-ros1-real:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.tortoisebot-ros1-real
+    image: chatzialex/cp22:tortoisebot-ros1-real
+    container_name: tortoisebot-ros1-real_1
+    environment:
+      - ROS_MASTER_URI=http://tortoisebot-ros1-real:11311
+    networks:
+      - ros1-network
+    hostname: tortoisebot-ros1-real
+    privileged: true
+  tortoisebot-ros1-slam:
+    restart: always
+    depends_on:
+      - tortoisebot-ros1-real
+    build:
+      context: .
+      dockerfile: Dockerfile.tortoisebot-ros1-slam
+    image: chatzialex/cp22:tortoisebot-ros1-slam
+    container_name: tortoisebot-ros1-slam_1
+    entrypoint: ["/bin/bash"]
+    command: >
+      -c "
+      source /opt/ros/noetic/setup.bash;
+      until rostopic list > /dev/null 2>&1; do
+        echo 'Waiting for ROS Master to start...';
+        sleep 2;
+      done;
+      echo 'ROS Master is up! Starting the ROS node...';
+      source /catkin_ws/devel/setup.bash &&
+      roslaunch tortoisebot_slam mapping.launch
+      "
+    environment:
+      - DISPLAY=${DISPLAY}
+      - ROS_MASTER_URI=http://tortoisebot-ros1-real:11311
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    networks:
+      - ros1-network
+
+networks:
+  ros1-network:
