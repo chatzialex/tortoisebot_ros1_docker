@@ -14,10 +14,11 @@ RUN apt-get update && apt-get install -y \
 
 # Prepare workspace
 RUN mkdir -p /catkin_ws/src
-RUN git clone --depth 1 --branch cp22-ros1 https://github.com/chatzialex/tortoisebot.git /tortoisebot \
+RUN git clone --depth 1 --branch noetic https://github.com/chatzialex/tortoisebot.git /tortoisebot \
  && cp -r /tortoisebot/tortoisebot_description /catkin_ws/src \
  && cp -r /tortoisebot/tortoisebot_gazebo /catkin_ws/src \
  && rm -rf /tortoisebot
+COPY tortoisebot_playground_with_web.launch /catkin_ws/src/tortoisebot_gazebo/launch/tortoisebot_playground_with_web.launch
 RUN mkdir -p /catkin_ws/src \
  && git clone --depth 1 --branch cp22-ros1 https://github.com/chatzialex/course_web_dev_ros.git /catkin_ws/src/course_web_dev_ros
 

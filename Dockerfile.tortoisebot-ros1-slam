@@ -1,22 +1,53 @@
-FROM ros:noetic
+FROM ros:noetic-ros-base
+
+SHELL ["/bin/bash", "-c"]
+# ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    ros-noetic-robot=1.5.0-1*
+RUN apt-get install -y --no-install-recommends \
+    ros-noetic-desktop=1.5.0-1*
+RUN apt-get install -y --no-install-recommends \
+    ros-noetic-desktop-full=1.5.0-1*
 
 RUN apt-get update \
  && apt-get install -y ros-noetic-navigation ros-noetic-gmapping \
  ros-noetic-rviz \
  ros-noetic-joy ros-noetic-teleop-twist-joy ros-noetic-teleop-twist-keyboard \ 
  git \
- && rm -rf /var/lib/apt/lists/*
+ python3-wstool python3-rosdep ninja-build stow
 
-# Prepare workspace
 RUN mkdir -p /catkin_ws/src
-RUN git clone --depth 1 --branch cp22-ros1 https://github.com/chatzialex/tortoisebot.git /tortoisebot \
+RUN git clone --depth 1 --branch noetic https://github.com/chatzialex/tortoisebot.git /tortoisebot \
  && cp -r /tortoisebot/tortoisebot_description /catkin_ws/src \
  && cp -r /tortoisebot/tortoisebot_slam /catkin_ws/src \
  && cp -r /tortoisebot/tortoisebot_navigation /catkin_ws/src \
- && rm -rf /tortoisebot
+ && cp /tortoisebot/tortoisebot_firmware/config/lidar.lua /catkin_ws/src/tortoisebot_slam/config/lidar.lua \
+ && rm -rf /tortoisebot \
+ && echo "install(DIRECTORY launch/ DESTINATION \${CATKIN_PACKAGE_SHARE_DESTINATION}/launch)" >> /catkin_ws/src/tortoisebot_slam/CMakeLists.txt
+COPY mapping.launch /catkin_ws/src/tortoisebot_slam/launch/mapping.launch
+
+RUN mkdir /catkin_ws/carto_ws
+COPY cartographer_ros.rosinstall /cartographer_ros.rosinstall
+RUN cd /catkin_ws/carto_ws \
+ && wstool init src \
+ && wstool merge -t src /cartographer_ros.rosinstall \
+ && wstool update -t src
+RUN sed -i '46s/^/<!-- /; 46s/$/ -->/' /catkin_ws/carto_ws/src/cartographer/package.xml
+RUN cd /catkin_ws/carto_ws \
+ && rosdep update \
+ && rosdep install --from-paths src --ignore-src --rosdistro=${ROS_DISTRO} -y \
+ && src/cartographer/scripts/install_abseil.sh \
+RUN rm -rf /var/lib/apt/lists/*
+
+RUN cd /catkin_ws/carto_ws \
+ && source /opt/ros/noetic/setup.bash \
+ && catkin_make_isolated --install --use-ninja -j4 -l4 \
+ && cd /catkin_ws \
+ && source /catkin_ws/carto_ws/install_isolated/setup.bash \
+ && catkin_make
 
 WORKDIR /catkin_ws
-RUN /bin/bash -c "source /opt/ros/noetic/setup.bash && catkin_make"
-
 ENTRYPOINT ["/bin/bash"]
-CMD ["-c", "source /catkin_ws/devel/setup.bash && roslaunch tortoisebot_slam mapping.launch"]
+CMD ["-c", "source /catkin_ws/carto_ws/install_isolated/setup.bash && source /catkin_ws/devel/setup.bash && roslaunch tortoisebot_slam mapping.launch"]
