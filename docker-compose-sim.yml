@@ -14,6 +14,9 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix
     networks:
       - ros1-network
+    ports:
+      - "9090:9090"
+      - "11315:11315"
     hostname: tortoisebot-ros1-gazebo
   tortoisebot-ros1-slam:
     restart: always
