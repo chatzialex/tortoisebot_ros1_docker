@@ -2,9 +2,9 @@ version: "3.7"
 services:
   tortoisebot-ros1-gazebo:
     restart: always
-    build:
-      context: .
-      dockerfile: Dockerfile.tortoisebot-ros1-gazebo
+#    build:
+#      context: .
+#      dockerfile: Dockerfile.tortoisebot-ros1-gazebo
     image: chatzialex/cp22:tortoisebot-ros1-gazebo
     container_name: tortoisebot-ros1-gazebo_1
     environment:
@@ -22,9 +22,9 @@ services:
     restart: always
     depends_on:
       - tortoisebot-ros1-gazebo
-    build:
-      context: .
-      dockerfile: Dockerfile.tortoisebot-ros1-slam
+#    build:
+#      context: .
+#      dockerfile: Dockerfile.tortoisebot-ros1-slam
     image: chatzialex/cp22:tortoisebot-ros1-slam
     container_name: tortoisebot-ros1-slam_1
     environment:
@@ -38,9 +38,9 @@ services:
     restart: always
     depends_on:
       - tortoisebot-ros1-gazebo
-    build:
-      context: .
-      dockerfile: Dockerfile.tortoisebot-ros1-waypoints
+#    build:
+#      context: .
+#      dockerfile: Dockerfile.tortoisebot-ros1-waypoints
     image: chatzialex/cp22:tortoisebot-ros1-waypoints
     container_name: tortoisebot-ros1-waypoints_1
     environment:
@@ -51,9 +51,9 @@ services:
     restart: always
     depends_on:
       - tortoisebot-ros1-gazebo
-    build:
-      context: .
-      dockerfile: Dockerfile.tortoisebot-ros1-webapp
+#    build:
+#      context: .
+#      dockerfile: Dockerfile.tortoisebot-ros1-webapp
     image: chatzialex/cp22:tortoisebot-ros1-webapp
     container_name: tortoisebot-ros1-webapp_1
     environment:

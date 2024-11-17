@@ -2,9 +2,9 @@ version: "3.7"
 services:
   tortoisebot-ros1-real:
     restart: always
-    build:
-      context: .
-      dockerfile: Dockerfile.tortoisebot-ros1-real
+#    build:
+#      context: .
+#      dockerfile: Dockerfile.tortoisebot-ros1-real
     image: chatzialex/cp22:tortoisebot-ros1-real
     container_name: tortoisebot-ros1-real_1
     environment:
@@ -17,9 +17,9 @@ services:
     restart: always
     depends_on:
       - tortoisebot-ros1-real
-    build:
-      context: .
-      dockerfile: Dockerfile.tortoisebot-ros1-slam
+#    build:
+#      context: .
+#      dockerfile: Dockerfile.tortoisebot-ros1-slam
     image: chatzialex/cp22:tortoisebot-ros1-slam
     container_name: tortoisebot-ros1-slam_1
     entrypoint: ["/bin/bash"]
