@@ -15,7 +15,7 @@ RUN apt-get update \
 COPY ./entrypoint.sh /entrypoint.sh
 
 # Copying the local my_webpage to /var/www/html in the docker image
-RUN git clone --depth 1 https://github.com/chatzialex/tortoisebot_webapp.git \
+RUN git clone --depth 1 --branch cp22 https://github.com/chatzialex/tortoisebot_webapp.git \
  && rm -rf .git \
  && mv tortoisebot_webapp/* /var/www/html
 

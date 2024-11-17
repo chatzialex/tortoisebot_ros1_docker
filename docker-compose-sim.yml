@@ -51,7 +51,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.tortoisebot-ros1-webapp
-    image: chatzialex/cp22:tortoisebot-ros1-wabapp
+    image: chatzialex/cp22:tortoisebot-ros1-webapp
     container_name: tortoisebot-ros1-webapp_1
     environment:
       - ROS_MASTER_URI=http://tortoisebot-ros1-gazebo:11311
